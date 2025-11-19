@@ -13,8 +13,9 @@ import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.models.Displayable
 import com.example.collectorapp.models.Item
 import com.example.collectorapp.ui.screens.PantallaLista
-import com.example.collectorapp.ui.components.formulario.FormularioElemento
 import com.example.collectorapp.ui.components.TopBar
+import com.example.collectorapp.ui.components.formulario.FormularioColeccion
+import com.example.collectorapp.ui.components.formulario.FormularioItem
 import com.example.collectorapp.ui.screens.coleccion.ColeccionPantalla
 import com.example.collectorapp.ui.screens.item.ItemPantalla
 
@@ -30,49 +31,69 @@ fun AppNavHost (
 
         NavHost(
             navController = navController,
-            startDestination = "listaColecciones",
+            startDestination = Rutas.LISTA_COLECCIONESS,
         ) {
-            composable("listaColecciones") {
+            composable(Rutas.LISTA_COLECCIONESS) {
                 ColeccionPantalla(
                     titulo = "Colecciones",
                     colecciones = colecciones,
                     onClickElemento = { coleccionId ->
                         navController.navigate("listaItems/$coleccionId")
                     },
-                    onClickNuevo = { navController.navigate("formularioElemento") },
+                    onClickNuevo = { navController.navigate("formularioColeccion") },
                     navController = navController
                 )
             }
 
             composable(
-                route = "listaItems/{idColeccion}",
+                route = Rutas.LISTA_ITEMS,
                 arguments = listOf(navArgument("idColeccion") { type = NavType.IntType })
             ) { backStackEntry ->
                 val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
                 //Filtrar items de esa coleccion y los pasa a PantallaLista
                 val itemsDeColeccion = items.filter { it.idColeccion == idColeccion }
+
                 ItemPantalla(
-                    titulo = "Items de la colección",
-                    items = itemsDeColeccion,
-                    onClickElemento = {},
-                    onClickNuevo = { navController.navigate("formularioElemento") },
-                    onBack = { navController.popBackStack() },
+                    titulo = "Items",
                     navController = navController,
-                    idColeccion = idColeccion
+                    items = itemsDeColeccion,
+                    onClickElemento = {}, //Edita item implementacion futura
+                    onClickNuevo = {
+                        navController.navigate("formularioItem/$idColeccion")
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    idColeccion = idColeccion,
                 )
             }
 
-            composable("formularioElemento") {
-                FormularioElemento(
-                    coleccionesDisponibles = colecciones,
-                    onGuardar = { elemento, tipo ->
-                        onGuardar(elemento, tipo)
+            composable(Rutas.FORMULARIO_COLECCION) {
+                FormularioColeccion(
+                    navController = navController,
+                    onGuardar = { coleccion ->
+                        onGuardar(coleccion, "Coleccion")
                         navController.popBackStack() //Volver a la lista
                     },
                     onCancelar = { navController.popBackStack() }
                 )
             }
+            composable(
+                route = Rutas.FORMULARIO_ITEM,
+                arguments = listOf(navArgument("idColeccion") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
+                FormularioItem(
+                    navController = navController,
+                    coleccionesDisponibles = colecciones,
+                    idColeccion = idColeccion,
+                    onGuardar = { item ->
+                        onGuardar(item, "Item")
+                        navController.popBackStack()
+                    },
+                    onCancelar = { navController.popBackStack() }
+                )
 
+            }
         }
-
 }
