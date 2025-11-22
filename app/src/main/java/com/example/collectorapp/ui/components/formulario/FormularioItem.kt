@@ -83,31 +83,56 @@ fun FormularioItem(
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Button(onClick = { imagen = if (imagen == null) "placeholder" else null }) {
+            Button(
+                onClick = {
+                    imagen = if (imagen == null) "placeholder" else null
+                          },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
                 Text(if (imagen != null) "Imagen seleccionada" else "Seleccionar imagen")
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(onClick = {
-                    if (nombre.isNotBlank()) {
-                        onGuardar(
-                            Item(
+                Button(
+                    onClick = {
+                        if (nombre.isNotBlank()) {
+                            val itemEditado = Item(
+                                id = item?.id ?: 0,
                                 nombre = nombre,
                                 descripcion = descripcion,
                                 categoria = categoria,
                                 imagen = imagen,
                                 idColeccion = idColeccion
                             )
-                        )
-                    }
-                },
+
+                            if (item != null) {
+                                itemVM.actualizar(itemEditado)
+                            } else {
+                                itemVM.insertar(itemEditado)
+                            }
+
+                            navController.popBackStack()
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     )
-                ) { Text("Guardar") }
+                ) {
+                    Text("Guardar")
+                }
 
-                OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
+
+                OutlinedButton(
+                    onClick = onCancelar,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                ) { Text("Cancelar") }
 
                 if(item != null){
                     Button(
@@ -115,6 +140,10 @@ fun FormularioItem(
                             itemVM.eliminar(item)
                             navController.popBackStack()
                         },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
                     ) {
                         Text("Eliminar")
                     }

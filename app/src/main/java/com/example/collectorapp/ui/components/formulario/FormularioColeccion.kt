@@ -78,7 +78,13 @@ fun FormularioColeccion(
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Button(onClick = { imagen = if (imagen == null) "placeholder" else null }) {
+            Button(onClick = {
+                imagen = if (imagen == null) "placeholder" else null },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
                 Text(if (imagen != null) "Imagen seleccionada" else "Seleccionar imagen")
             }
 
@@ -101,7 +107,13 @@ fun FormularioColeccion(
 
                 ) { Text("Guardar") }
 
-                OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
+                OutlinedButton(
+                    onClick = onCancelar,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    ) { Text("Cancelar") }
             }
         }
     }
