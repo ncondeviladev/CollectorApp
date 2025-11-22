@@ -13,13 +13,15 @@ fun ItemPantalla(
     onClickElemento: (Int) -> Unit,
     onClickNuevo: () -> Unit,
     onBack: () -> Unit,
-    idColeccion: Int
+    idColeccion: Int,
+    onToggleTheme: () -> Unit
 )  {
     PantallaLista(
         titulo = titulo,
         elementos = items,
         onClickElemento = onClickElemento,
         onClickNuevo = onClickNuevo,
-        onBack = onBack
+        onBack = onBack,
+        onToggleTheme = onToggleTheme
     )
 }

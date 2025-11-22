@@ -3,6 +3,7 @@ package com.example.collectorapp.ui.screens.coleccion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.ui.screens.PantallaLista
 import com.example.collectorapp.viewmodels.ColeccionViewModel
 
@@ -10,7 +11,8 @@ import com.example.collectorapp.viewmodels.ColeccionViewModel
 fun ColeccionPantalla(
     viewModel: ColeccionViewModel,
     onClickColeccion: (Int) -> Unit,
-    onClickNuevo: () -> Unit
+    onClickNuevo: () -> Unit,
+    onToggleTheme: () -> Unit,
 ) {
     val colecciones by viewModel.colecciones.collectAsState(initial = emptyList())
 
@@ -18,6 +20,7 @@ fun ColeccionPantalla(
         titulo = "Colecciones",
         elementos = colecciones,
         onClickElemento = onClickColeccion,
-        onClickNuevo = onClickNuevo
+        onClickNuevo = onClickNuevo,
+        onToggleTheme = onToggleTheme
     )
 }

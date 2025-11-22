@@ -21,9 +21,11 @@ fun FormularioElemento(
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
-    var tipo by remember { mutableStateOf("Coleccion o Item") }
+    var tipo by remember { mutableStateOf("Coleccion") }
     var coleccionSeleccionada by remember { mutableStateOf<Coleccion?>(null) }
     var imagen by remember { mutableStateOf<String?>(null) } //Placeholder para futura imagen
+    var expanded by remember { mutableStateOf(false) }
+
 
     //Scroll de la pantalla
     Column(
@@ -71,56 +73,73 @@ fun FormularioElemento(
         //Selector de coleccion solo si es item
         if (tipo == "Item") {
             Text("Asignar a coleccion")
-            DropdownMenu(
-                expanded = coleccionesDisponibles.isNotEmpty(),
-                onDismissRequest = {}
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
             ) {
-                coleccionesDisponibles.forEach { coleccion ->
-                    DropdownMenuItem(
-                        text = { Text(coleccion.nombre) },
-                        onClick = { coleccionSeleccionada = coleccion }
-                    )
+                TextField(
+                    modifier = Modifier.menuAnchor(),
+                    readOnly = true,
+                    value = coleccionSeleccionada?.nombre ?: "",
+                    onValueChange = {},
+                    label = { Text("Colección") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    coleccionesDisponibles.forEach { coleccion ->
+                        DropdownMenuItem(
+                            text = { Text(coleccion.nombre) },
+                            onClick = {
+                                coleccionSeleccionada = coleccion
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
-
-            //Selñector de imaghen
+            //Selector de imaghen
             Button(onClick = {/* TODO: abrir selector de imagen */ }) {
                 Text(if (imagen != null) "Imagen seleccionada" else "Seleccionar imagen")
             }
-            //Botones guardar y cancelar
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(
-                    onClick = {
-                        if (nombre.isNotBlank()) {
-                            //Crea Displayable temporal y envia onGuardar
-                            if (tipo == "Coleccion") {
-                                val coleccion = Coleccion(
-                                    nombre = nombre,
-                                    descripcion = descripcion,
-                                    categoria = categoria
-                                )
-                                onGuardar(coleccion, tipo)
+        }
+        //Botones guardar y cancelar
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Button(
+                onClick = {
+                    if (nombre.isNotBlank()) {
+                        //Crea Displayable temporal y envia onGuardar
+                        if (tipo == "Coleccion") {
+                            val coleccion = Coleccion(
+                                nombre = nombre,
+                                descripcion = descripcion,
+                                categoria = categoria
+                            )
+                            onGuardar(coleccion, tipo)
 
-                            } else if (tipo == "Item" && coleccionSeleccionada != null) {
-                                val item = Item(
-                                    nombre = nombre,
-                                    descripcion = descripcion,
-                                    categoria = categoria,
-                                    idColeccion = coleccionSeleccionada!!.id
-                                )
-                                onGuardar(item, tipo)
-                            }
+                        } else if (tipo == "Item" && coleccionSeleccionada != null) {
+                            val item = Item(
+                                nombre = nombre,
+                                descripcion = descripcion,
+                                categoria = categoria,
+                                idColeccion = coleccionSeleccionada!!.id
+                            )
+                            onGuardar(item, tipo)
                         }
                     }
-                ) {
-                    Text("Guardar")
-                }
-                OutlinedButton(onClick = onCancelar) {
-                    Text("Cancelar")
-                }
-
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Text("Guardar")
             }
-
+            OutlinedButton(onClick = onCancelar) {
+                Text("Cancelar")
+            }
         }
     }
 }

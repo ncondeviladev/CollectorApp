@@ -4,23 +4,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Brightness6
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.collectorapp.models.Displayable
 import com.example.collectorapp.ui.components.tarjetas.Tarjeta
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.IconButton
+import com.example.collectorapp.ui.theme.MediumCornerRadius
 
 
 //Pantalla generica de lista de colecciones e items
@@ -31,23 +37,48 @@ fun PantallaLista(
     elementos: List<Displayable>,
     onClickElemento: (id: Int) -> Unit,
     onClickNuevo: () -> Unit,
-    onBack: (() -> Unit)? = null
+    onBack: (() -> Unit)? = null,
+    onToggleTheme: () -> Unit
 ) {
     Scaffold( //Scaffold general con topbar y boton añadir
         topBar = {
-            TopAppBar(
-                title = { Text(titulo) },
-                navigationIcon = { //Icono de retroceso si hay pantalla anterior
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+            Surface(
+                color = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
+                shape = RoundedCornerShape(
+                    bottomStart = MediumCornerRadius,
+                    bottomEnd = MediumCornerRadius
+                )
+            ) {
+                TopAppBar(
+                    title = { Text(titulo) },
+                    navigationIcon = { //Icono de retroceso si hay pantalla anterior
+                        if (onBack != null) {
+                            IconButton(onClick = onBack) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+                            }
                         }
-                    }
-                }
-            )
+                    },
+                    actions = {
+                        IconButton(onClick = onToggleTheme) {
+                            Icon(Icons.Default.Brightness6, contentDescription = "Cambiar tema")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.onSecondary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onSecondary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                )
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onClickNuevo) {
+            FloatingActionButton(
+                onClick = onClickNuevo,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Nuevo")
             }
         }
@@ -56,16 +87,18 @@ fun PantallaLista(
         LazyColumn( //lazy column ajusta tamaño segun contenido
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            items(elementos) { elemento ->
+            items(elementos) {
+                elemento ->
                 Tarjeta(
                     titulo = elemento.nombre,
                     lineas = listOfNotNull(elemento.descripcion, elemento.categoria),
                     onClick = { onClickElemento(elemento.id) },
                 )
+            }
         }
     }
 }
-}
-

@@ -7,6 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.collectorapp.data.AppDatabase
 import com.example.collectorapp.data.repositorio.Repositorio
@@ -34,13 +38,16 @@ class MainActivity : ComponentActivity() {
         val itemVM = ItemVMFactory(repo).create(ItemViewModel::class.java)
 
         setContent {
-            CollectorAppTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
+            var darkTheme by remember { mutableStateOf(false) }
+
+
+            CollectorAppTheme(darkTheme = darkTheme) {
+
                     AppNavHost(
                         coleccionVM = coleccionVM,
-                        itemVM = itemVM
+                        itemVM = itemVM,
+                        onToggleTheme = { darkTheme = !darkTheme }
                     )
-                }
             }
         }
 

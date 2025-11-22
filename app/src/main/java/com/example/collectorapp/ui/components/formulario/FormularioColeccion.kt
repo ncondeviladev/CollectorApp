@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -34,7 +36,8 @@ import com.example.collectorapp.ui.components.TopBar
 fun FormularioColeccion(
     onGuardar: (Coleccion) -> Unit,
     onCancelar: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    onToggleTheme: () -> Unit
 ) {
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
@@ -44,7 +47,11 @@ fun FormularioColeccion(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopBar(navController = navController, titulo = stringResource(R.string.añadir_coleccion))
+        TopBar(
+            navController = navController,
+            titulo = stringResource(R.string.añadir_coleccion),
+            onToggleTheme = onToggleTheme
+        )
 
         Column(
             modifier = Modifier
@@ -86,7 +93,13 @@ fun FormularioColeccion(
                             )
                         )
                     }
-                }) { Text("Guardar") }
+                },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+
+                ) { Text("Guardar") }
 
                 OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
             }
