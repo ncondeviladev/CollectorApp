@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">CollectorApp</string>
-    <string name="formulario_coleccion">Formulario Coleccion</string>
+    <string name="añadir_coleccion">Añadir Coleccion</string>
 </resources>

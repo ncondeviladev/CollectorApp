@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.models.Item
 import com.example.collectorapp.ui.components.TopBar
+import com.example.collectorapp.viewmodels.ItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,19 +35,21 @@ fun FormularioItem(
     idColeccion: Int,
     onGuardar: (Item) -> Unit,
     onCancelar: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    itemVM: ItemViewModel
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
+    val item = itemVM.itemSeleccionado
+    var nombre by remember { mutableStateOf(item?.nombre  ?: "") }
+    var descripcion by remember { mutableStateOf(item?.descripcion ?: "") }
+    var categoria by remember { mutableStateOf(item?.categoria ?: "") }
     var imagen by remember { mutableStateOf<String?>(null) } // Imagen opcional
     val nombreColeccion = coleccionesDisponibles.find { it.id == idColeccion }?.nombre ?: "Colección desconocida"
-
+    val tituloTopBar = if(item != null) "Editar ${item.nombre}" else "Añadir a $nombreColeccion"
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopBar(navController = navController, titulo = "Añadir Item \n $nombreColeccion")
+        TopBar(navController = navController, titulo = tituloTopBar)
 
         Column(
             modifier = Modifier
@@ -93,6 +96,18 @@ fun FormularioItem(
                 }) { Text("Guardar") }
 
                 OutlinedButton(onClick = onCancelar) { Text("Cancelar") }
+
+                if(item != null){
+                    Button(
+                        onClick = {
+                            itemVM.eliminar(item)
+                            navController.popBackStack()
+                        },
+                    ) {
+                        Text("Eliminar")
+                    }
+                }
+
             }
         }
     }

@@ -57,14 +57,23 @@ fun AppNavHost(
             val items by itemVM.items.collectAsState()
             val itemsDeColeccion = items.filter { it.idColeccion == idColeccion }
 
+            val colecciones by coleccionVM.colecciones.collectAsState()
+            val coleccionActual = colecciones.find { it.id == idColeccion }
+            val nombreColeccion = coleccionActual?.nombre ?: "Colección sin nombre"
+
             ItemPantalla(
-                titulo = "Items",
+                titulo = nombreColeccion,
                 navController = navController,
                 items = itemsDeColeccion,
                 onClickElemento = { itemId ->
-                    navController.navigate("formularioItem/$idColeccion?id=$itemId")
+                    val item = itemsDeColeccion.find { it.id == itemId }!!
+                    itemVM.itemSeleccionado = item  //  guardamos el item para editar
+                    navController.navigate("formularioItem/$idColeccion?modoFormulario=editar")
                 },
-                onClickNuevo = { navController.navigate("formularioItem/$idColeccion?id=0") },
+                onClickNuevo = {
+                    itemVM.itemSeleccionado = null // limpiar antes de añadir
+                    navController.navigate("formularioItem/$idColeccion?modoFormulario=añadir")
+                },
                 onBack = { navController.popBackStack() },
                 idColeccion = idColeccion
             )
@@ -83,7 +92,9 @@ fun AppNavHost(
 
         composable(
             route = Rutas.FORMULARIO_ITEM,
-            arguments = listOf(navArgument("idColeccion") { type = NavType.IntType })
+            arguments = listOf(
+                navArgument("idColeccion") { type = NavType.IntType }
+            )
         ) { backStackEntry ->
             val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
             val colecciones by coleccionVM.colecciones.collectAsState()
@@ -92,6 +103,7 @@ fun AppNavHost(
                 navController = navController,
                 coleccionesDisponibles = colecciones,
                 idColeccion = idColeccion,
+                itemVM = itemVM,
                 onGuardar = { item ->
                     itemVM.insertar(item)
                     navController.popBackStack()
@@ -99,5 +111,6 @@ fun AppNavHost(
                 onCancelar = { navController.popBackStack() }
             )
         }
+
     }
 }

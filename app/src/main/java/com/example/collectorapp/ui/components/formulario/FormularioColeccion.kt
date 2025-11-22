@@ -44,7 +44,7 @@ fun FormularioColeccion(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopBar(navController = navController, titulo = stringResource(R.string.formulario_coleccion))
+        TopBar(navController = navController, titulo = stringResource(R.string.añadir_coleccion))
 
         Column(
             modifier = Modifier

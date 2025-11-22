@@ -15,6 +15,9 @@ class ItemViewModel (private val repo: Repositorio): ViewModel(){
     private val _items = MutableStateFlow<List<Item>>(emptyList())
     val items: StateFlow<List<Item>> = _items
 
+    var itemSeleccionado: Item? = null //variable para formulario editar
+
+
     fun cargarItems(idColeccion: Int) {
         viewModelScope.launch {
             repo.obtenerPorColeccion(idColeccion).collectLatest { lista ->//devuelve Flow desde room
