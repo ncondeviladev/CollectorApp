@@ -1,11 +1,10 @@
 package com.example.collectorapp.ui.navigation
 
-import android.view.Surface
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,10 +14,9 @@ import com.example.collectorapp.ui.components.formulario.FormularioColeccion
 import com.example.collectorapp.ui.components.formulario.FormularioItem
 import com.example.collectorapp.ui.screens.coleccion.ColeccionPantalla
 import com.example.collectorapp.ui.screens.item.ItemPantalla
+import com.example.collectorapp.ui.screens.splash.SplashScreen
 import com.example.collectorapp.viewmodels.ColeccionViewModel
 import com.example.collectorapp.viewmodels.ItemViewModel
-import androidx.compose.runtime.getValue
-
 
 @Composable
 fun AppNavHost(
@@ -33,9 +31,12 @@ fun AppNavHost(
 
         NavHost(
             navController = navController,
-            startDestination = Rutas.LISTA_COLECCIONESS,
+            startDestination = Rutas.SPLASH // nueva pantalla de inicio, 2s y lleva a colecciones
+        ) {
+            composable(Rutas.SPLASH) {
+                SplashScreen(navController = navController)
+            }
 
-            ) {
             composable(Rutas.LISTA_COLECCIONESS) {
                 val colecciones by coleccionVM.colecciones.collectAsState()
                 ColeccionPantalla(

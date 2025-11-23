@@ -14,10 +14,9 @@ import androidx.navigation.NavController
 import com.example.collectorapp.ui.navigation.Rutas
 import kotlinx.coroutines.delay
 
+//Pantalla inicio bienvenida
 @Composable
 fun SplashScreen(navController: NavController) {
-    // Usamos un LaunchedEffect para la navegación después de un tiempo.
-    // La clave `true` hace que solo se ejecute una vez.
     LaunchedEffect(key1 = true) {
         delay(2000) // Esperamos 2 segundos
         navController.navigate(Rutas.LISTA_COLECCIONESS) {
@@ -28,7 +27,7 @@ fun SplashScreen(navController: NavController) {
         }
     }
 
-    // El contenido de la pantalla
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +38,7 @@ fun SplashScreen(navController: NavController) {
         Text(
             text = "Collector App",
             style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = MaterialTheme.colorScheme.secondary
         )
     }
 }

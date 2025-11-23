@@ -2,33 +2,51 @@ package com.example.collectorapp.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.collectorapp.R
 
-// Set of Material typography styles to start with
+
+
+val TitulosFontFamily = FontFamily(
+    Font(R.font.stacksansnotch, FontWeight.Bold)
+)
+val CuerpoFontFamily = FontFamily(
+    Font(R.font.redhatdisplay, FontWeight.Normal)
+)
+
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+    displayLarge = TextStyle(
+        fontFamily = TitulosFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 57.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = TitulosFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 32.sp
+    ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = TitulosFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 22.sp
+    ),
+
+    bodyLarge = TextStyle(
+        fontFamily = CuerpoFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 16.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = CuerpoFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = CuerpoFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 11.sp
     )
-    */
 )
