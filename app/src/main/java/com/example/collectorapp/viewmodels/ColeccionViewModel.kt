@@ -2,6 +2,7 @@ package com.example.collectorapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.collectorapp.data.repositorio.ItemRepo
 import com.example.collectorapp.data.repositorio.Repositorio
 import com.example.collectorapp.models.Coleccion
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,7 @@ class ColeccionViewModel(private val repo: Repositorio) : ViewModel() {
 
     fun eliminar(coleccion: Coleccion) {
         viewModelScope.launch {
+            repo.eliminarItemsPorColeccion(coleccion.id)
             repo.eliminarColeccion(coleccion)
         }
     }

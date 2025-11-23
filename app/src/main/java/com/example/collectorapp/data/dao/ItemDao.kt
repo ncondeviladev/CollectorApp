@@ -27,6 +27,11 @@ interface ItemDao {
 
     @Query("SELECT * FROM items WHERE id = :itemId")
     suspend fun obtenerPorId(itemId: Int): Item? //Devuelve null si no lo encuentra
+
+
+    @Query("DELETE FROM items WHERE idColeccion = :idColeccion")
+    suspend fun eliminarItemsPorColeccion(idColeccion: Int)
+
 }
 
 

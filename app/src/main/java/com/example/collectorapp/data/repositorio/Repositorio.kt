@@ -1,6 +1,7 @@
 package com.example.collectorapp.data.repositorio
 
 import com.example.collectorapp.data.AppDatabase
+import com.example.collectorapp.data.dao.ItemDao
 import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.models.Item
 
@@ -23,6 +24,9 @@ class Repositorio(private val database: AppDatabase) {
     suspend fun obtenerItemPorId(id: Int) = itemRepo.obtenerPorId(id)
     fun obtenerPorColeccion(idColeccion: Int) = itemRepo.obtenerPorColeccion(idColeccion)
 
+    suspend fun eliminarItemsPorColeccion(idColeccion: Int) {
+        itemRepo.eliminarItemsPorColeccion(idColeccion)
+    }
 
 }
 

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.collectorapp.models.Displayable
 import com.example.collectorapp.ui.components.tarjetas.Tarjeta
 import com.example.collectorapp.ui.theme.MediumCornerRadius
@@ -35,10 +36,14 @@ import com.example.collectorapp.ui.theme.MediumCornerRadius
 fun PantallaLista(
     titulo: String,
     elementos: List<Displayable>,
-    onClickElemento: (id: Int) -> Unit,
     onClickNuevo: () -> Unit,
     onBack: (() -> Unit)? = null,
-    onToggleTheme: () -> Unit
+    onToggleTheme: () -> Unit,
+    navController: NavController,
+
+    onClickElemento: (id: Int) -> Unit,
+    onEditElemento: ((id: Int) -> Unit)? = null,
+    onDeleteElemento: ((id: Int) -> Unit)? = null,
 ) {
     Scaffold( //Scaffold general con topbar y boton añadir
         topBar = {
@@ -97,6 +102,12 @@ fun PantallaLista(
                     titulo = elemento.nombre,
                     lineas = listOfNotNull(elemento.descripcion, elemento.categoria),
                     onClick = { onClickElemento(elemento.id) },
+                    onEdit = onEditElemento?.let { onEdit ->
+                        { onEdit(elemento.id)}
+                    },
+                    onDelete = onDeleteElemento?.let { onDelete ->
+                        { onDelete(elemento.id)}
+                    }
                 )
             }
         }

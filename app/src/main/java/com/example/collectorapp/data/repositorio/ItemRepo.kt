@@ -1,5 +1,6 @@
 package com.example.collectorapp.data.repositorio
 
+import androidx.room.Query
 import com.example.collectorapp.data.dao.ItemDao
 import com.example.collectorapp.models.Item
 
@@ -15,6 +16,9 @@ class ItemRepo(private val itemDao: ItemDao) {
     fun obtenerPorColeccion(idColeccion: Int) = itemDao.obtenerPorColeccion(idColeccion)
 
     suspend fun obtenerPorId(id: Int) = itemDao.obtenerPorId(id)
+
+
+    suspend fun eliminarItemsPorColeccion(idColeccion: Int) =  itemDao.eliminarItemsPorColeccion(idColeccion)
 
 
 

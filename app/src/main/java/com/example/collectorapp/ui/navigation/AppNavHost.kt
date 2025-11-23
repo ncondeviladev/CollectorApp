@@ -38,16 +38,16 @@ fun AppNavHost(
             }
 
             composable(Rutas.LISTA_COLECCIONESS) {
-                val colecciones by coleccionVM.colecciones.collectAsState()
                 ColeccionPantalla(
                     onToggleTheme = onToggleTheme,
                     viewModel = coleccionVM,
+                    navController = navController,
                     onClickColeccion = { coleccionId ->
                         itemVM.cargarItems(coleccionId)
-                        navController.navigate("listaItems/$coleccionId")
+                        navController.navigate(Rutas.LISTA_ITEMS.replace("{idColeccion}", coleccionId.toString()))
                     },
                     onClickNuevo = {
-                        navController.navigate(Rutas.FORMULARIO_COLECCION)
+                        navController.navigate(Rutas.FORMULARIO_COLECCION.substringBefore("?"))
                     }
                 )
             }
@@ -59,7 +59,6 @@ fun AppNavHost(
                 val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
                 val items by itemVM.items.collectAsState()
                 val itemsDeColeccion = items.filter { it.idColeccion == idColeccion }
-
                 val colecciones by coleccionVM.colecciones.collectAsState()
                 val coleccionActual = colecciones.find { it.id == idColeccion }
                 val nombreColeccion = coleccionActual?.nombre ?: "Colección sin nombre"
@@ -69,55 +68,55 @@ fun AppNavHost(
                     titulo = nombreColeccion,
                     navController = navController,
                     items = itemsDeColeccion,
-                    onClickElemento = { itemId ->
-                        val item = itemsDeColeccion.find { it.id == itemId }!!
-                        itemVM.itemSeleccionado = item  //  guardamos el item para editar
-                        navController.navigate("formularioItem/$idColeccion?modoFormulario=editar")
-                    },
+                    itemVM = itemVM,
                     onClickNuevo = {
                         itemVM.itemSeleccionado = null // limpiar antes de añadir
-                        navController.navigate("formularioItem/$idColeccion?modoFormulario=añadir")
+                        navController.navigate(
+                            Rutas.FORMULARIO_ITEM
+                                .replace("{idColeccion}", idColeccion.toString())
+                                .replace("{modoFormulario}", "añadir")
+                        )
                     },
                     onBack = { navController.popBackStack() },
                     idColeccion = idColeccion
                 )
             }
 
-            composable(Rutas.FORMULARIO_COLECCION) {
+            composable(
+                route = Rutas.FORMULARIO_COLECCION,
+                arguments = listOf(navArgument("id") {
+                    type = NavType.StringType
+                    nullable = true
+                })
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+
                 FormularioColeccion(
-                    onToggleTheme = onToggleTheme,
+                    coleccionId = id,
+                    viewModel = coleccionVM,
                     navController = navController,
-                    onGuardar = { coleccion ->
-                        coleccionVM.insertar(coleccion)
-                        navController.popBackStack()
-                    },
-                    onCancelar = { navController.popBackStack() }
+                    onToggleTheme = onToggleTheme
                 )
             }
 
             composable(
                 route = Rutas.FORMULARIO_ITEM,
                 arguments = listOf(
-                    navArgument("idColeccion") { type = NavType.IntType }
+                    navArgument("idColeccion") { type = NavType.IntType },
+                    navArgument("modoFormulario") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
-                val colecciones by coleccionVM.colecciones.collectAsState()
+                val modo = backStackEntry.arguments?.getString("modoFormulario")
 
                 FormularioItem(
                     onToggleTheme = onToggleTheme,
                     navController = navController,
-                    coleccionesDisponibles = colecciones,
                     idColeccion = idColeccion,
                     itemVM = itemVM,
-                    onGuardar = { item ->
-                        itemVM.insertar(item)
-                        navController.popBackStack()
-                    },
-                    onCancelar = { navController.popBackStack() }
+                    modoFormulario = modo
                 )
             }
-
         }
     }
 }

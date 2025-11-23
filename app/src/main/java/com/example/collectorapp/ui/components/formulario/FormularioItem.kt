@@ -1,5 +1,6 @@
 package com.example.collectorapp.ui.components.formulario
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,14 +11,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,29 +24,40 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.models.Item
+import com.example.collectorapp.ui.components.DialogoConfirmacion
 import com.example.collectorapp.ui.components.TopBar
 import com.example.collectorapp.viewmodels.ItemViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioItem(
-    coleccionesDisponibles: List<Coleccion>,
-    idColeccion: Int,
-    onGuardar: (Item) -> Unit,
-    onCancelar: () -> Unit,
+    onToggleTheme: () -> Unit,
     navController: NavController,
+    idColeccion: Int,
     itemVM: ItemViewModel,
-    onToggleTheme: () -> Unit
+    modoFormulario: String?
 ) {
-    val item = itemVM.itemSeleccionado
-    var nombre by remember { mutableStateOf(item?.nombre  ?: "") }
-    var descripcion by remember { mutableStateOf(item?.descripcion ?: "") }
-    var categoria by remember { mutableStateOf(item?.categoria ?: "") }
-    var imagen by remember { mutableStateOf<String?>(null) } // Imagen opcional
-    val nombreColeccion = coleccionesDisponibles.find { it.id == idColeccion }?.nombre ?: "Colección desconocida"
-    val tituloTopBar = if(item != null) "Editar ${item.nombre}" else "Añadir a $nombreColeccion"
+    val esModoEdicion = modoFormulario == "editar"
+    val itemAEditar = if (esModoEdicion) itemVM.itemSeleccionado else null
+
+    var nombre by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("") }
+    var imagen by remember { mutableStateOf<String?>(null) }
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    LaunchedEffect(itemAEditar) {
+        if (esModoEdicion) { // Solo rellenamos si estamos editando
+            itemAEditar?.let {
+                nombre = it.nombre
+                descripcion = it.descripcion ?: ""
+                categoria = it.categoria ?: ""
+                imagen = it.imagen
+            }
+        }
+    }
+
+    val tituloTopBar = if (esModoEdicion) "Editar ${itemAEditar?.nombre ?: "Item"}" else "Añadir Item"
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -84,9 +94,7 @@ fun FormularioItem(
                 modifier = Modifier.fillMaxWidth()
             )
             Button(
-                onClick = {
-                    imagen = if (imagen == null) "placeholder" else null
-                          },
+                onClick = { /* Lógica para seleccionar imagen */ },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -99,8 +107,12 @@ fun FormularioItem(
                 Button(
                     onClick = {
                         if (nombre.isNotBlank()) {
-                            val itemEditado = Item(
-                                id = item?.id ?: 0,
+                            val item = itemAEditar?.copy(
+                                nombre = nombre,
+                                descripcion = descripcion,
+                                categoria = categoria,
+                                imagen = imagen
+                            ) ?: Item(
                                 nombre = nombre,
                                 descripcion = descripcion,
                                 categoria = categoria,
@@ -108,12 +120,11 @@ fun FormularioItem(
                                 idColeccion = idColeccion
                             )
 
-                            if (item != null) {
-                                itemVM.actualizar(itemEditado)
+                            if (esModoEdicion) {
+                                itemVM.actualizar(item)
                             } else {
-                                itemVM.insertar(itemEditado)
+                                itemVM.insertar(item)
                             }
-
                             navController.popBackStack()
                         }
                     },
@@ -125,31 +136,42 @@ fun FormularioItem(
                     Text("Guardar")
                 }
 
-
                 OutlinedButton(
-                    onClick = onCancelar,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                ) { Text("Cancelar") }
-
-                if(item != null){
-                    Button(
-                        onClick = {
-                            itemVM.eliminar(item)
-                            navController.popBackStack()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    ) {
-                        Text("Eliminar")
-                    }
+                    onClick = { navController.popBackStack() },
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Cancelar")
                 }
 
+                if (esModoEdicion) {
+                    itemAEditar?.let { item ->
+                        Button(
+                            onClick = { mostrarDialogo = true },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        ) {
+                            Text("Eliminar")
+                        }
+                    }
+                }
             }
+        }
+    }
+
+    if (mostrarDialogo) {
+        itemAEditar?.let { item ->
+            DialogoConfirmacion(
+                onConfirmar = {
+                    itemVM.eliminar(item)
+                    mostrarDialogo = false
+                    navController.popBackStack()
+                },
+                onCancelar = { mostrarDialogo = false },
+                titulo = "Eliminar Item",
+                texto = "Se eliminará '${item.nombre}'. ¿Estás seguro?"
+            )
         }
     }
 }

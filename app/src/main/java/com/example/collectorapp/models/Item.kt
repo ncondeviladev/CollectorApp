@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-class Item(
+data class Item(
     @PrimaryKey(autoGenerate = true)
     override var id: Int = 0,
     override val nombre: String,

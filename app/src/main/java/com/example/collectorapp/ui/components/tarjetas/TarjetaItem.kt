@@ -15,6 +15,6 @@ fun TarjetaItem(
     Tarjeta(
         titulo = nombre,
         lineas = lienas,
-        onClick = null //Los items no navegan por ahora
+        onClick = { } // los items no navegan por ahora
     )
 }
