@@ -3,30 +3,35 @@ package com.example.collectorapp.ui.screens.splash
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.collectorapp.R
 import com.example.collectorapp.ui.navigation.Rutas
 import kotlinx.coroutines.delay
 
-//Pantalla inicio bienvenida
 @Composable
 fun SplashScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
-        delay(2000) // Esperamos 2 segundos
+        delay(2000)
         navController.navigate(Rutas.LISTA_COLECCIONESS) {
-            // Limpiamos la pila de navegación para que el usuario no pueda volver atrás.
             popUpTo(Rutas.SPLASH) {
                 inclusive = true
             }
         }
     }
-
 
     Column(
         modifier = Modifier
@@ -39,6 +44,13 @@ fun SplashScreen(navController: NavController) {
             text = "Collector App",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.secondary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Icon(
+            painter = painterResource(id = R.drawable.logobasico),
+            contentDescription = "App Logo",
+            modifier = Modifier.size(120.dp),
+            tint = Color.Unspecified
         )
     }
 }

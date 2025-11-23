@@ -1,8 +1,12 @@
 package com.example.collectorapp.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,16 +25,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.collectorapp.R
 import com.example.collectorapp.models.Displayable
 import com.example.collectorapp.ui.components.tarjetas.Tarjeta
 import com.example.collectorapp.ui.theme.MediumCornerRadius
 
-
-//Pantalla generica de lista de colecciones e items
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaLista(
@@ -40,12 +45,11 @@ fun PantallaLista(
     onBack: (() -> Unit)? = null,
     onToggleTheme: () -> Unit,
     navController: NavController,
-
     onClickElemento: (id: Int) -> Unit,
     onEditElemento: ((id: Int) -> Unit)? = null,
-    onDeleteElemento: ((id: Int) -> Unit)? = null,
+    onDeleteElemento: ((id: Int) -> Unit)? = null
 ) {
-    Scaffold( //Scaffold general con topbar y boton añadir
+    Scaffold(
         topBar = {
             Surface(
                 color = MaterialTheme.colorScheme.secondary,
@@ -56,8 +60,19 @@ fun PantallaLista(
                 )
             ) {
                 TopAppBar(
-                    title = { Text(titulo) },
-                    navigationIcon = { //Icono de retroceso si hay pantalla anterior
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.logobasico),
+                                contentDescription = "App Logo",
+                                modifier = Modifier.size(32.dp),
+                                tint = Color.Unspecified
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(titulo)
+                        }
+                    },
+                    navigationIcon = {
                         if (onBack != null) {
                             IconButton(onClick = onBack) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
@@ -87,9 +102,9 @@ fun PantallaLista(
                 Icon(Icons.Default.Add, contentDescription = "Nuevo")
             }
         }
-    ) { paddingValues -> //Contendio de la pantalla lista con scroll
+    ) { paddingValues ->
 
-        LazyColumn( //lazy column ajusta tamaño segun contenido
+        LazyColumn(
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
@@ -102,12 +117,8 @@ fun PantallaLista(
                     titulo = elemento.nombre,
                     lineas = listOfNotNull(elemento.descripcion, elemento.categoria),
                     onClick = { onClickElemento(elemento.id) },
-                    onEdit = onEditElemento?.let { onEdit ->
-                        { onEdit(elemento.id)}
-                    },
-                    onDelete = onDeleteElemento?.let { onDelete ->
-                        { onDelete(elemento.id)}
-                    }
+                    onEdit = onEditElemento?.let { onEdit -> { onEdit(elemento.id) } },
+                    onDelete = onDeleteElemento?.let { onDelete -> { onDelete(elemento.id) } }
                 )
             }
         }
