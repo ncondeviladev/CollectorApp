@@ -12,6 +12,6 @@ object Rutas {
     
     const val FORMULARIO_COLECCION = "formularioColeccion"
     
-    const val FORMULARIO_ITEM_PREFIX = "formularioItem/"
-    const val FORMULARIO_ITEM = "${FORMULARIO_ITEM_PREFIX}{idColeccion}"
+    const val FORMULARIO_ITEM_PREFIX = "formularioItem"
+    const val FORMULARIO_ITEM = "${FORMULARIO_ITEM_PREFIX}/{idColeccion}"
 }

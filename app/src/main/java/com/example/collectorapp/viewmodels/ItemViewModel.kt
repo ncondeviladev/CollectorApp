@@ -6,28 +6,35 @@ import com.example.collectorapp.data.repositorio.Repositorio
 import com.example.collectorapp.models.Item
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ItemViewModel (private val repo: Repositorio): ViewModel(){
 
-    // _* es mutable privado interno de clase
     private val _items = MutableStateFlow<List<Item>>(emptyList())
     val items: StateFlow<List<Item>> = _items
 
-    var itemSeleccionado: Item? = null //variable para formulario editar
+    var itemSeleccionado: Item? = null
 
+    private val _idColeccion = MutableStateFlow<Int>(0)
+    val idColeccion: StateFlow<Int> = _idColeccion.asStateFlow()
+
+    fun actualizarIdColeccion(id: Int) {
+        _idColeccion.value = id
+    }
 
     fun cargarItems(idColeccion: Int) {
         viewModelScope.launch {
-            repo.obtenerPorColeccion(idColeccion).collectLatest { lista ->//devuelve Flow desde room
+            repo.obtenerPorColeccion(idColeccion).collectLatest { lista ->
                 _items.value = lista
             }
         }
     }
-    
-    fun insertar(item: Item) {
+
+    fun insertar(nombre: String, descripcion: String) {
         viewModelScope.launch {
+            val item = Item(nombre = nombre, descripcion = descripcion, idColeccion = _idColeccion.value)
             repo.insertarItem(item)
         }
     }
@@ -43,7 +50,4 @@ class ItemViewModel (private val repo: Repositorio): ViewModel(){
             repo.actualizarItem(item)
         }
     }
-
-
-
 }

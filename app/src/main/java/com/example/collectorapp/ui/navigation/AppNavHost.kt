@@ -60,7 +60,12 @@ fun AppNavHost(
             if (navBackStackEntry?.arguments?.getString("id") != null) stringResource(R.string.titulo_editar_coleccion) else stringResource(R.string.titulo_nueva_coleccion)
         }
         currentRoute.startsWith(Rutas.FORMULARIO_ITEM_PREFIX) -> {
-            if (navBackStackEntry?.arguments?.getString("modoFormulario") == "editar") stringResource(R.string.titulo_editar_item) else stringResource(R.string.titulo_nuevo_item)
+            if (navBackStackEntry?.arguments?.getString("modoFormulario") == "editar") {
+                stringResource(R.string.titulo_editar_item)
+            } else {
+                val id = navBackStackEntry?.arguments?.getInt("idColeccion") ?: -1
+                colecciones.find { it.id == id }?.nombre ?: stringResource(R.string.titulo_nuevo_item)
+            }
         }
         else -> ""
     }
@@ -103,7 +108,7 @@ fun AppNavHost(
         ) {
             composable(Rutas.SPLASH) {
                 SplashScreen(onTimeout = { navigationActions.navigateToColeccionList() })
-            }
+           }
             composable(Rutas.LISTA_COLECCIONESS) {
                 ColeccionPantalla(
                     viewModel = coleccionVM,
@@ -157,6 +162,8 @@ fun AppNavHost(
             ) { backStackEntry ->
                 val modo = backStackEntry.arguments?.getString("modoFormulario")
                 val item = if (modo == "editar") itemVM.itemSeleccionado else null
+                val idColeccion = backStackEntry.arguments?.getInt("idColeccion") ?: 0
+                itemVM.actualizarIdColeccion(idColeccion)
                 EditItemPantalla(
                     itemViewModel = itemVM,
                     coleccionViewModel = coleccionVM,

@@ -27,11 +27,11 @@ class NavigationActions(private val navController: NavController) {
     }
 
     fun navigateToNewItemForm(coleccionId: Int) {
-        navController.navigate("${Rutas.FORMULARIO_ITEM_PREFIX}$coleccionId?modoFormulario=añadir")
+        navController.navigate("${Rutas.FORMULARIO_ITEM_PREFIX}/$coleccionId?modoFormulario=añadir")
     }
 
     fun navigateToEditItemForm(coleccionId: Int) {
-        navController.navigate("${Rutas.FORMULARIO_ITEM_PREFIX}$coleccionId?modoFormulario=editar")
+        navController.navigate("${Rutas.FORMULARIO_ITEM_PREFIX}/$coleccionId?modoFormulario=editar")
     }
 
     fun popBackStack() {

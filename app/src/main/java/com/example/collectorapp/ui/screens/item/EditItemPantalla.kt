@@ -17,15 +17,17 @@ fun EditItemPantalla(
     onCancelar: () -> Unit
 ) {
     val colecciones by coleccionViewModel.colecciones.collectAsState()
+    val idColeccion by itemViewModel.idColeccion.collectAsState()
 
     FormularioElemento(
         elemento = itemExistente,
         tipoDeElemento = "Item",
+        idColeccion = idColeccion,
         coleccionesDisponibles = colecciones,
         onGuardar = { displayable ->
             val item = displayable as Item
             if (itemExistente == null) {
-                itemViewModel.insertar(item)
+                itemViewModel.insertar(item.nombre, item.descripcion ?: "")
             } else {
                 // Nos aseguramos de mantener el ID original al actualizar
                 itemViewModel.actualizar(item.copy(id = itemExistente.id))

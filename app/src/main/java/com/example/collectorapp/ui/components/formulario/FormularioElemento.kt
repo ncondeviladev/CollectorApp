@@ -58,6 +58,7 @@ import com.example.collectorapp.models.Item
 fun FormularioElemento(
     elemento: Displayable?,
     tipoDeElemento: String,
+    idColeccion: Int? = null,
     coleccionesDisponibles: List<Coleccion>,
     onGuardar: (Displayable) -> Unit,
     onCancelar: () -> Unit
@@ -186,7 +187,6 @@ fun FormularioElemento(
                 val elementoGuardado: Displayable = if (tipoDeElemento == "Coleccion") {
                     (elemento as? Coleccion)?.copy(nombre = nombre, descripcion = descripcion, imagen = selectedImageUri?.toString()) ?: Coleccion(nombre = nombre, descripcion = descripcion, imagen = selectedImageUri?.toString())
                 } else {
-                    val idColeccion = (elemento as? Item)?.idColeccion ?: coleccionesDisponibles.firstOrNull()?.id ?: 0
                     val itemExistente = elemento as? Item
                     val nuevasUrisString = imageUris.map { it.toString() }
 
@@ -200,7 +200,7 @@ fun FormularioElemento(
                         nombre = nombre,
                         descripcion = descripcion,
                         categoria = categoria,
-                        idColeccion = idColeccion,
+                        idColeccion = idColeccion ?: 0,
                         imagen = selectedImageUri?.toString(),
                         imageUris = nuevasUrisString
                     )
