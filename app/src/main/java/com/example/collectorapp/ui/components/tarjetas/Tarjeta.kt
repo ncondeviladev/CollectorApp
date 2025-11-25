@@ -2,9 +2,7 @@ package com.example.collectorapp.ui.components.tarjetas
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,9 +24,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.collectorapp.R
 import com.example.collectorapp.ui.theme.LargeCornerRadius
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -36,7 +40,7 @@ import com.example.collectorapp.ui.theme.LargeCornerRadius
 fun Tarjeta(
     titulo: String,
     lineas: List<String> = emptyList(),
-    imagen: String? = null,
+    imagenUri: String? = null,
     onClick: () -> Unit,
     onEdit: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null
@@ -50,7 +54,6 @@ fun Tarjeta(
     val shadowColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
 
     var menuVisible by remember { mutableStateOf(false) }
-
 
     Box {
         Card(
@@ -69,35 +72,51 @@ fun Tarjeta(
                         if (onEdit != null || onDelete != null) {
                             menuVisible = true
                         }
-
                     }
                 ),
             shape = cardShape,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp
-            )
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .background(
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(
+                if (imagenUri != null) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imagenUri)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = stringResource(R.string.descripcion_imagen_tarjeta),
+                        contentScale = ContentScale.Crop, // Cambio a Crop
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(
                                 topStart = 8.dp,
                                 topEnd = 0.dp,
                                 bottomEnd = 8.dp,
                                 bottomStart = 0.dp
+                            ))
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                                shape = RoundedCornerShape(
+                                    topStart = 8.dp,
+                                    topEnd = 0.dp,
+                                    bottomEnd = 8.dp,
+                                    bottomStart = 0.dp
+                                )
                             )
-                        )
-                )
+                    )
+                }
                 Spacer(Modifier.width(16.dp))
 
                 Column {
@@ -123,22 +142,22 @@ fun Tarjeta(
         ) {
             onEdit?.let {
                 DropdownMenuItem(
-                    text = { Text("Editar") },
+                    text = { Text(stringResource(R.string.editar)) },
                     onClick = {
-                        menuVisible = false
                         it()
-                    })
+                        menuVisible = false
+                    }
+                )
             }
             onDelete?.let {
                 DropdownMenuItem(
-                    text = { Text("Eliminar") },
+                    text = { Text(stringResource(R.string.eliminar)) },
                     onClick = {
-                        menuVisible = false
                         it()
-                    })
+                        menuVisible = false
+                    }
+                )
             }
         }
-
     }
 }
-

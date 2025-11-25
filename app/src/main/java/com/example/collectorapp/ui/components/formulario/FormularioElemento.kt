@@ -1,144 +1,217 @@
 package com.example.collectorapp.ui.components.formulario
 
-import androidx.compose.foundation.layout.*
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.collectorapp.R
 import com.example.collectorapp.models.Coleccion
 import com.example.collectorapp.models.Displayable
 import com.example.collectorapp.models.Item
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioElemento(
-    coleccionesDisponibles: List<Coleccion>, //En caso de que se guarde item
-    onGuardar: (Displayable, tipo: String) -> Unit, //Llama al displayable correspondiente para guardar el elemento
+    elemento: Displayable?,
+    tipoDeElemento: String,
+    coleccionesDisponibles: List<Coleccion>,
+    onGuardar: (Displayable) -> Unit,
     onCancelar: () -> Unit
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var tipo by remember { mutableStateOf("Coleccion") }
-    var coleccionSeleccionada by remember { mutableStateOf<Coleccion?>(null) }
-    var imagen by remember { mutableStateOf<String?>(null) } //Placeholder para futura imagen
-    var expanded by remember { mutableStateOf(false) }
+    var nombre by remember(elemento) { mutableStateOf(elemento?.nombre ?: "") }
+    var descripcion by remember(elemento) { mutableStateOf(elemento?.descripcion ?: "") }
+    var categoria by remember(elemento) { mutableStateOf(elemento?.categoria ?: "") }
 
+    val imageUris = remember(elemento) {
+        ((elemento as? Item)?.imageUris?.map { it.toUri() } ?: emptyList()).toMutableStateList()
+    }
+    var selectedImageUri by remember(elemento) { mutableStateOf(elemento?.imagen?.let { it.toUri() }) }
 
-    //Scroll de la pantalla
+    val singleImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri: Uri? ->
+            if (uri != null) {
+                selectedImageUri = uri
+            }
+        }
+    )
+
+    val multipleImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris: List<Uri> ->
+            imageUris.addAll(uris)
+        }
+    )
+
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        //Selector de tipo
-        Text("Tipo de elemento")
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            RadioButton(
-                selected = tipo == "Coleccion",
-                onClick = { tipo = "Coleccion" }
-            )
-            Text("Coleccion")
-
-            RadioButton(
-                selected = tipo == "Item",
-                onClick = { tipo = "Item" }
-            )
-            Text("Item")
-        }
-        //Campos de formulario
         OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it },
-            label = { Text("Nombre") },
+            label = { Text(stringResource(R.string.nombre)) },
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = descripcion,
             onValueChange = { descripcion = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = categoria,
-            onValueChange = { categoria = it },
-            label = { Text("Categoría") },
+            label = { Text(stringResource(R.string.descripcion)) },
             modifier = Modifier.fillMaxWidth()
         )
 
-        //Selector de coleccion solo si es item
-        if (tipo == "Item") {
-            Text("Asignar a coleccion")
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+        if (tipoDeElemento == "Item") {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = categoria,
+                onValueChange = { categoria = it },
+                label = { Text(stringResource(R.string.categoria)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { multipleImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
+                Text(stringResource(R.string.anadir_fotos))
+            }
+        } else { // Es una Coleccion
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { singleImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
+                Text(stringResource(R.string.anadir_cambiar_foto))
+            }
+        }
+
+        // Galería para Items
+        if (tipoDeElemento == "Item" && imageUris.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(stringResource(R.string.instruccion_imagenes), style = MaterialTheme.typography.bodySmall)
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 8.dp)
             ) {
-                TextField(
-                    modifier = Modifier.menuAnchor(),
-                    readOnly = true,
-                    value = coleccionSeleccionada?.nombre ?: "",
-                    onValueChange = {},
-                    label = { Text("Colección") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    coleccionesDisponibles.forEach { coleccion ->
-                        DropdownMenuItem(
-                            text = { Text(coleccion.nombre) },
-                            onClick = {
-                                coleccionSeleccionada = coleccion
-                                expanded = false
-                            }
+                items(imageUris) { uri ->
+                    Box(modifier = Modifier.clickable { selectedImageUri = uri }) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current).data(uri).crossfade(true).build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .height(100.dp)
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(4.dp))
+                                .border(
+                                    width = if (uri == selectedImageUri) 2.dp else 0.dp,
+                                    color = if (uri == selectedImageUri) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
                         )
+                        IconButton(
+                            onClick = {
+                                imageUris.remove(uri)
+                                if (selectedImageUri == uri) {
+                                    selectedImageUri = imageUris.firstOrNull()
+                                }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
+                                .size(20.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.eliminar_imagen),
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     }
                 }
             }
-            //Selector de imaghen
-            Button(onClick = {/* TODO: abrir selector de imagen */ }) {
-                Text(if (imagen != null) "Imagen seleccionada" else "Seleccionar imagen")
-            }
         }
-        //Botones guardar y cancelar
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(
-                onClick = {
-                    if (nombre.isNotBlank()) {
-                        //Crea Displayable temporal y envia onGuardar
-                        if (tipo == "Coleccion") {
-                            val coleccion = Coleccion(
-                                nombre = nombre,
-                                descripcion = descripcion,
-                                categoria = categoria
-                            )
-                            onGuardar(coleccion, tipo)
+        // Preview para Coleccion
+        else if (tipoDeElemento == "Coleccion" && selectedImageUri != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(stringResource(R.string.imagen_coleccion), style = MaterialTheme.typography.bodySmall)
+            AsyncImage(model = selectedImageUri, contentDescription = null, modifier = Modifier.height(100.dp).clip(RoundedCornerShape(4.dp)))
+        }
 
-                        } else if (tipo == "Item" && coleccionSeleccionada != null) {
-                            val item = Item(
-                                nombre = nombre,
-                                descripcion = descripcion,
-                                categoria = categoria,
-                                idColeccion = coleccionSeleccionada!!.id
-                            )
-                            onGuardar(item, tipo)
-                        }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                )
-            ) {
-                Text("Guardar")
+        Spacer(modifier = Modifier.height(16.dp))
+        Row {
+            Button(onClick = {
+                val elementoGuardado: Displayable = if (tipoDeElemento == "Coleccion") {
+                    (elemento as? Coleccion)?.copy(nombre = nombre, descripcion = descripcion, imagen = selectedImageUri?.toString()) ?: Coleccion(nombre = nombre, descripcion = descripcion, imagen = selectedImageUri?.toString())
+                } else {
+                    val idColeccion = (elemento as? Item)?.idColeccion ?: coleccionesDisponibles.firstOrNull()?.id ?: 0
+                    val itemExistente = elemento as? Item
+                    val nuevasUrisString = imageUris.map { it.toString() }
+
+                    itemExistente?.copy(
+                        nombre = nombre,
+                        descripcion = descripcion,
+                        categoria = categoria,
+                        imagen = selectedImageUri?.toString(),
+                        imageUris = nuevasUrisString
+                    ) ?: Item(
+                        nombre = nombre,
+                        descripcion = descripcion,
+                        categoria = categoria,
+                        idColeccion = idColeccion,
+                        imagen = selectedImageUri?.toString(),
+                        imageUris = nuevasUrisString
+                    )
+                }
+                onGuardar(elementoGuardado)
+            }) {
+                Text(stringResource(R.string.guardar))
             }
-            OutlinedButton(onClick = onCancelar) {
-                Text("Cancelar")
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = onCancelar) {
+                Text(stringResource(R.string.cancelar))
             }
         }
     }

@@ -7,14 +7,21 @@ fun TarjetaItem(
     nombre: String,
     descripcion: String?,
     categoria: String?,
+    imagenUri: String?,
+    onClick: () -> Unit,
+    onEdit: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null
 ) {
-    val lienas = listOfNotNull( //Lista de descripcion, categoria, idColeccion)
+    val lineas = listOfNotNull(
         descripcion,
-        "Categoría: $categoria"
+        if (!categoria.isNullOrBlank()) "Categoría: $categoria" else null
     )
     Tarjeta(
         titulo = nombre,
-        lineas = lienas,
-        onClick = { } // los items no navegan por ahora
+        lineas = lineas,
+        imagenUri = imagenUri,
+        onClick = onClick,
+        onEdit = onEdit,
+        onDelete = onDelete
     )
 }

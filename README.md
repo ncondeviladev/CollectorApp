@@ -18,6 +18,8 @@ Hay algunas clases que terminaron igual, aunque otras, como las pantallas, sí q
 
 Estos errores de estructura y desarrollo vienen por el aprendizaje y las prisas de entrega, aunque reconozco que he aprendido mucho en esta pequeña práctica.
 
+Una última implementación con mucha ayuda de ia ha sido la de poder cargar imágenes en las tarjetas, poder seleccionar una de ellas como principal mostrandose en la propia tarjeta en la pantalla de listas.
+
 ## Funcionalidades Principales
 - CRUD completo para colecciones y sus ítems (Crear, Leer, Actualizar y Eliminar)
 - Menú contextual en tarjetas para editar o eliminar elementos
@@ -26,6 +28,7 @@ Estos errores de estructura y desarrollo vienen por el aprendizaje y las prisas 
 - Navegación robusta con rutas centralizadas en `Rutas.kt`
 - Splash Screen al iniciar la app
 - Estilos consistentes en modo claro y oscuro
+- Subida de imágenes en tarjetas y capacidad de seleccionar una como principal
 
 ## Guía de Uso
 

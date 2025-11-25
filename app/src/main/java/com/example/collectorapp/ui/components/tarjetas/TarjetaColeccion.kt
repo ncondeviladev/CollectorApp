@@ -6,14 +6,16 @@ import androidx.compose.runtime.Composable
 fun TarjetaColeccion(
     nombre: String,
     descripcion: String?,
+    imagenUri: String?,
     onClick: () -> Unit
 ) {
-    val lineas = listOfNotNull(//Lista de descripcion, categoria, idColeccion)
+    val lineas = listOfNotNull(
         descripcion
     )
     Tarjeta(
         titulo = nombre,
         lineas = lineas,
+        imagenUri = imagenUri,
         onClick = onClick
     )
 }

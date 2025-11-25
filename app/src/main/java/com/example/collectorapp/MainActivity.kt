@@ -4,19 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.collectorapp.data.AppDatabase
 import com.example.collectorapp.data.repositorio.Repositorio
-import com.example.collectorapp.models.Coleccion
-import com.example.collectorapp.models.Displayable
-import com.example.collectorapp.models.Item
 import com.example.collectorapp.ui.navigation.AppNavHost
 import com.example.collectorapp.ui.theme.CollectorAppTheme
 import com.example.collectorapp.viewmodels.ColeccionVMFactory
@@ -34,8 +28,9 @@ class MainActivity : ComponentActivity() {
         val database = AppDatabase.getDatabase(this)
         val repo = Repositorio(database)
 
-        val coleccionVM = ColeccionVMFactory(repo).create(ColeccionViewModel::class.java)
-        val itemVM = ItemVMFactory(repo).create(ItemViewModel::class.java)
+        val coleccionVM: ColeccionViewModel by viewModels { ColeccionVMFactory(repo) }
+        val itemVM: ItemViewModel by viewModels { ItemVMFactory(repo) }
+
 
         setContent {
             var darkTheme by remember { mutableStateOf(false) }
@@ -50,14 +45,5 @@ class MainActivity : ComponentActivity() {
                     )
             }
         }
-
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAppConContenido() {
-
-
 }

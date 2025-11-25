@@ -1,4 +1,26 @@
 <resources>
     <string name="app_name">CollectorApp</string>
-    <string name="añadir_coleccion">Añadir Coleccion</string>
+    <string name="anadir_coleccion">Añadir Coleccion</string>
+    <string name="prefijo_categoria">Categoría: %s</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="descripcion_imagen_tarjeta">Imagen de la tarjeta</string>
+    <string name="nombre">Nombre</string>
+    <string name="descripcion">Descripción</string>
+    <string name="categoria">Categoría</string>
+    <string name="anadir_fotos">Añadir Fotos</string>
+    <string name="anadir_cambiar_foto">Añadir/Cambiar Foto</string>
+    <string name="instruccion_imagenes">Imágenes (toca para principal, X para borrar)</string>
+    <string name="eliminar_imagen">Eliminar imagen</string>
+    <string name="imagen_coleccion">Imagen de la colección:</string>
+    <string name="guardar">Guardar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="titulo_mis_colecciones">Mis Colecciones</string>
+    <string name="titulo_items">Items</string>
+    <string name="titulo_detalle_item">Detalle del Item</string>
+    <string name="titulo_editar_coleccion">Editar Colección</string>
+    <string name="titulo_nueva_coleccion">Nueva Colección</string>
+    <string name="titulo_editar_item">Editar Item</string>
+    <string name="titulo_nuevo_item">Nuevo Item</string>
+    <string name="fab_nuevo_contenido">Nuevo</string>
 </resources>

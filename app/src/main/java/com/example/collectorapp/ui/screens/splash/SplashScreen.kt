@@ -17,20 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.collectorapp.R
-import com.example.collectorapp.ui.navigation.Rutas
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(onTimeout: () -> Unit) {
     LaunchedEffect(key1 = true) {
         delay(2000)
-        navController.navigate(Rutas.LISTA_COLECCIONESS) {
-            popUpTo(Rutas.SPLASH) {
-                inclusive = true
-            }
-        }
+        onTimeout()
     }
 
     Column(
